@@ -71,6 +71,9 @@ export default function ConfirmedPage() {
               onStatusChange={async (id, status) => {
                 await setInviteStatus({ id, status });
               }}
+              onDeliveryChange={async (id, invitationDelivered) => {
+                await updateInvite({ id, patch: { invitationDelivered } });
+              }}
               onDelete={async (id) => {
                 await deleteInvite({ id });
               }}

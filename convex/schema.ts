@@ -11,6 +11,7 @@ export default defineSchema({
     likelihood: v.number(),
     notes: v.string(),
     status: v.union(v.literal("candidate"), v.literal("confirmed")),
+    invitationDelivered: v.optional(v.boolean()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })

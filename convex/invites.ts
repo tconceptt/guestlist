@@ -25,6 +25,7 @@ type InviteInput = {
   likelihood: number;
   notes?: string;
   status?: Doc<"invites">["status"];
+  invitationDelivered?: boolean;
 };
 
 function clampScale(value: number) {
@@ -63,6 +64,7 @@ function cleanInvite(input: InviteInput) {
     likelihood: clampScale(input.likelihood),
     notes: cleanText(input.notes),
     status: input.status ?? "candidate",
+    invitationDelivered: input.invitationDelivered ?? false,
   };
 }
 
@@ -75,6 +77,7 @@ const patchValidator = {
   likelihood: v.optional(v.number()),
   notes: v.optional(v.string()),
   status: v.optional(statusValidator),
+  invitationDelivered: v.optional(v.boolean()),
 };
 
 export const listInvites = query({
@@ -140,6 +143,7 @@ export const updateInvite = mutation({
       likelihood: args.patch.likelihood ?? existing.likelihood,
       notes: args.patch.notes ?? existing.notes,
       status: args.patch.status ?? existing.status,
+      invitationDelivered: args.patch.invitationDelivered ?? existing.invitationDelivered,
     });
 
     await ctx.db.patch(args.id, {

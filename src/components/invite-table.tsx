@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, Pencil, RotateCcw, Search, Trash2 } from "lucide-react";
+import { Check, MailCheck, Pencil, RotateCcw, Search, Trash2 } from "lucide-react";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import { SIDES, scoreBands, type InviteSide, type ScoreBandKey } from "@/lib/labels";
 import { clampScale, getInviteScore, getScoreBand } from "@/lib/scoring";
@@ -13,16 +13,18 @@ type InviteTableProps = {
   mode: "candidate" | "confirmed";
   onUpdate: (id: Id<"invites">, patch: Partial<InviteFormValues>) => Promise<void>;
   onStatusChange: (id: Id<"invites">, status: "candidate" | "confirmed") => Promise<void>;
+  onDeliveryChange?: (id: Id<"invites">, invitationDelivered: boolean) => Promise<void> | void;
   onDelete: (id: Id<"invites">) => Promise<void>;
 };
 
-type SortKey = "score" | "name" | "side" | "partySize";
+type SortKey = "score" | "createdAt" | "name" | "side" | "partySize";
 
 export function InviteTable({
   invites,
   mode,
   onUpdate,
   onStatusChange,
+  onDeliveryChange,
   onDelete,
 }: InviteTableProps) {
   const [search, setSearch] = useState("");
@@ -62,6 +64,9 @@ export function InviteTable({
         }
         if (sort === "partySize") {
           return b.partySize - a.partySize;
+        }
+        if (sort === "createdAt") {
+          return b.createdAt - a.createdAt;
         }
         return String(a[sort]).localeCompare(String(b[sort]));
       });
@@ -106,6 +111,7 @@ export function InviteTable({
         </select>
         <select value={sort} onChange={(event) => setSort(event.target.value as SortKey)}>
           <option value="score">Sort by score</option>
+          <option value="createdAt">Sort by latest added</option>
           <option value="name">Sort by name</option>
           <option value="side">Sort by side</option>
           <option value="partySize">Sort by party size</option>
@@ -155,6 +161,20 @@ export function InviteTable({
                   <div className="inviteScales">
                     <span>Importance {invite.importance}/5</span>
                     <span>Chance {invite.likelihood}/5</span>
+                    {mode === "confirmed" ? (
+                      <label className="deliveryToggle">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(invite.invitationDelivered)}
+                          onChange={(event) =>
+                            onDeliveryChange?.(invite._id, event.target.checked)
+                          }
+                          aria-label={`Invitation delivered for ${invite.name}`}
+                        />
+                        <MailCheck size={15} />
+                        Delivered
+                      </label>
+                    ) : null}
                   </div>
                   <div className="rowActions">
                     <button

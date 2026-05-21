@@ -442,6 +442,25 @@ h1 {
   min-width: 130px;
 }
 
+.deliveryToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #513f36;
+  font-size: 0.84rem;
+  font-weight: 740;
+}
+
+.deliveryToggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--rose-dark);
+}
+
+.deliveryToggle svg {
+  color: var(--rose);
+}
+
 .rowActions {
   display: flex;
   gap: 6px;
